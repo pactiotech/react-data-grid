@@ -9,6 +9,15 @@
   ],
   "repository": "github:pactiotech/react-data-grid",
   "bugs": "https://github.com/adazzle/react-data-grid/issues",
+  "exports": {
+    ".": {
+      "module": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "browser": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.d.ts",
   "type": "module",
   "files": [
     "lib",
