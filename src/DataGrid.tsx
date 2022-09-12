@@ -89,6 +89,7 @@ export interface DataGridHandle {
   scrollToColumn: (colIdx: number) => void;
   scrollToRow: (rowIdx: number) => void;
   selectCell: (position: Position, enableEditor?: Maybe<boolean>) => void;
+  resetSelection: () => void;
 }
 
 type SharedDivProps = Pick<
@@ -455,7 +456,8 @@ function DataGrid<R, SR, K extends Key>(
         behavior: 'smooth'
       });
     },
-    selectCell
+    selectCell,
+    resetSelection
   }));
 
   /**
@@ -482,6 +484,10 @@ function DataGrid<R, SR, K extends Key>(
     setOverRowIdx(rowIdx);
     latestDraggedOverRowIdx.current = rowIdx;
   }, []);
+
+  const resetSelection = useCallback(() => {
+    setSelectedPosition(initialPosition)
+  }, [])
 
   /**
    * event handlers
