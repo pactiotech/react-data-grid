@@ -7,22 +7,12 @@
     "react",
     "data grid"
   ],
-  "repository": "github:adazzle/react-data-grid",
+  "repository": "github:pactiotech/react-data-grid",
   "bugs": "https://github.com/adazzle/react-data-grid/issues",
   "type": "module",
-  "exports": {
-    ".": {
-      "module": "./lib/bundle.js",
-      "require": "./lib/bundle.cjs",
-      "default": "./lib/bundle.js"
-    }
-  },
-  "browser": "./lib/bundle.js",
-  "main": "./lib/bundle.cjs",
-  "module": "./lib/bundle.js",
-  "types": "./lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "sideEffects": false,
   "scripts": {
