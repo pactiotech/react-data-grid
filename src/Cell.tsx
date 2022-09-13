@@ -57,6 +57,7 @@ function Cell<R, SR>(
     onContextMenu,
     onRowChange,
     selectCell,
+    onPaste,
     ...props
   }: CellRendererProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
@@ -111,6 +112,7 @@ function Cell<R, SR>(
       onContextMenu={handleContextMenu}
       {...props}
     >
+      <input onPaste={onPaste} type="hidden" />
       {!column.rowGroup && (
         <>
           <column.formatter
