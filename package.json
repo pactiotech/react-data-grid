@@ -1,5 +1,5 @@
 {
-  "name": "react-data-grid",
+  "name": "pactio-react-data-grid",
   "version": "7.0.0",
   "license": "MIT",
   "description": "Excel-like grid component built with React, with editors, keyboard navigation, copy & paste, and the like",
@@ -8,7 +8,7 @@
     "react-data-grid",
     "data-grid"
   ],
-  "repository": "github:adazzle/react-data-grid",
+  "repository": "github:pactiotech/react-data-grid",
   "bugs": {
     "url": "https://github.com/adazzle/react-data-grid/issues"
   },
