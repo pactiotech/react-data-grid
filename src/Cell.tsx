@@ -101,7 +101,9 @@ function Cell<R, SR>(
     if (!isCellSelected) {
       return;
     }
-    ref?.current?.focus({ preventScroll: true });
+    (
+      ref as { current: { focus: ({ preventScroll }: Record<string, boolean>) => void } }
+    ).current.focus({ preventScroll: true });
   }, [isCellSelected, ref]);
 
   return (
