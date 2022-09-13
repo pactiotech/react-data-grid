@@ -499,7 +499,8 @@ function DataGrid<R, SR, K extends Key>(
         return;
       }
       if (keyCode === vKey) {
-        handlePaste(event);
+        // Handled by onPaste now
+        // handlePaste(event);
         return;
       }
     }
@@ -591,10 +592,10 @@ function DataGrid<R, SR, K extends Key>(
     onCopy({ row, columnKey });
   }
 
-  function handlePaste(event: React.KeyboardEvent<HTMLDivElement>) {
+  function handlePaste(event: React.ClipboardEvent<HTMLDivElement>) {
     const { idx, rowIdx } = selectedPosition;
     const targetRow = rawRows[getRawRowIdx(rowIdx)];
-    if (!onPaste || !onRowsChange || copiedCell === null || !isCellEditable(selectedPosition)) {
+    if (!onPaste || !onRowsChange || !isCellEditable(selectedPosition)) {
       return;
     }
 
@@ -948,6 +949,7 @@ function DataGrid<R, SR, K extends Key>(
       idx: selectedPosition.idx,
       onFocus: handleFocus,
       onKeyDown: handleKeyDown,
+      onPaste: handlePaste,
       dragHandleProps:
         enableCellDragAndDrop && isCellEditable(selectedPosition)
           ? { onMouseDown: handleMouseDown, onDoubleClick: handleDoubleClick }

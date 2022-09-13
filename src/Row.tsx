@@ -91,6 +91,7 @@ function Row<R, SR>(
         onRowClick={onRowClick}
         onRowChange={onRowChange}
         selectCell={selectCell}
+        onPaste={isCellSelected ? (selectedCellProps as SelectedCellProps).onPaste : undefined}
       />
     );
   }

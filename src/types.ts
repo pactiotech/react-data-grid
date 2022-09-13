@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import type React from 'react';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -129,6 +130,7 @@ export interface SelectedCellProps extends SelectedCellPropsBase {
   dragHandleProps:
     | Pick<React.HTMLAttributes<HTMLDivElement>, 'onMouseDown' | 'onDoubleClick'>
     | undefined;
+  onPaste: React.ClipboardEventHandler<HTMLDivElement>;
 }
 
 export type SelectCellFn = (position: Position, enableEditor?: boolean | null) => void;
@@ -194,7 +196,7 @@ export interface FillEvent<TRow> {
 }
 
 export interface PasteEvent<TRow> {
-  event: React.KeyboardEvent<HTMLDivElement>;
+  event: React.ClipboardEvent<HTMLDivElement>;
   columnKey: string;
   row: TRow;
 }
