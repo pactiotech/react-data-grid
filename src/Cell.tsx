@@ -101,9 +101,10 @@ function Cell<R, SR>(
     if (!isCellSelected) {
       return;
     }
-    (
-      ref as { current: { focus: ({ preventScroll }: Record<string, boolean>) => void } }
-    ).current.focus({ preventScroll: true });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    (ref as { current: { focus: ({ preventScroll }: Record<string, boolean>) => void } })?.current
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      ?.focus?.({ preventScroll: true });
   }, [isCellSelected, ref]);
 
   return (
