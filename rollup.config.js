@@ -4,6 +4,7 @@ import postcss from 'rollup-plugin-postcss';
 import { babel } from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import stylis from 'stylis';
+import pkg from './package.json';
 
 stylis.set({ prefix: false });
 const extensions = ['.ts', '.tsx'];
@@ -28,10 +29,12 @@ export default {
   external: (id) => !id.startsWith('.') && !isAbsolute(id),
   plugins: [
     linaria({
-      classNameSlug() {
+      preprocessor: 'none',
+      classNameSlug(hash) {
         // We add the package version as suffix to avoid style conflicts
         // between multiple versions of RDG on the same page.
-        return 'pactiotech';
+        console.log(`${hash}${pkg.version.replaceAll('.', '')}`);
+        return `${hash}${pkg.version.replaceAll('.', '')}`;
       }
     }),
     postcss({ minimize: true }),

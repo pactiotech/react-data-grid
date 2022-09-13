@@ -21,24 +21,24 @@ const cellDraggedOver = css`
 
 const cellDraggedOverClassname = `rdg-cell-dragged-over ${cellDraggedOver}`;
 
-const cellDragHandle = css`
-  cursor: move;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 8px;
-  height: 8px;
-  background-color: var(--selection-color);
+// const cellDragHandle = css`
+//   cursor: move;
+//   position: absolute;
+//   right: 0;
+//   bottom: 0;
+//   width: 8px;
+//   height: 8px;
+//   background-color: var(--selection-color);
 
-  &:hover {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--selection-color);
-    background-color: var(--background-color);
-  }
-`;
+//   &:hover {
+//     width: 16px;
+//     height: 16px;
+//     border: 2px solid var(--selection-color);
+//     background-color: var(--background-color);
+//   }
+// `;
 
-const cellDragHandleClassname = `rdg-cell-drag-handle ${cellDragHandle}`;
+const cellDragHandleClassname = `rdg-cell-drag-handle`;
 
 function Cell<R, SR>(
   {

@@ -38,8 +38,6 @@ const root = css`
   --selection-color: #66afe9;
   --font-size: 14px;
 
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
-  // We set a stacking context so internal elements don't render on top of external components.
   contain: strict;
   contain: size layout style paint;
   content-visibility: auto;
@@ -52,7 +50,6 @@ const root = css`
   color: var(--color);
   font-size: var(--font-size);
 
-  // set stacking context in safari
   @supports not (contain: strict) {
     position: relative;
     z-index: 0;

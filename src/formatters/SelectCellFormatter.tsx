@@ -12,7 +12,7 @@ const checkboxLabel = css`
   right: 0;
   bottom: 0;
   left: 0;
-  margin-right: 1px; // align checkbox in row group cell
+  margin-right: 1px;
 `;
 
 const checkboxLabelClassname = `rdg-checkbox-label ${checkboxLabel}`;

@@ -10,7 +10,7 @@ export const row = css`
   position: absolute;
   left: 0;
   width: var(--row-width);
-  height: var(--row-height); // needed on Firefox
+  height: var(--row-height);
   line-height: var(--row-height);
   background-color: var(--background-color);
 
@@ -33,7 +33,7 @@ const summaryRow = css`
   position: sticky;
   z-index: 3;
   grid-template-rows: var(--summary-row-height);
-  height: var(--summary-row-height); // needed on Firefox
+  height: var(--summary-row-height);
   line-height: var(--summary-row-height);
 
   > .${cell} {
