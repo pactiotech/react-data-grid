@@ -1,4 +1,4 @@
-import { forwardRef, memo } from 'react';
+import { forwardRef, memo, useLayoutEffect } from 'react';
 import type { RefAttributes } from 'react';
 import { css } from '@linaria/core';
 
@@ -97,6 +97,13 @@ function Cell<R, SR>(
     onRowChange(rowIdx, newRow);
   }
 
+  useLayoutEffect(() => {
+    if (!isCellSelected) {
+      return;
+    }
+    ref?.current?.focus({ preventScroll: true });
+  }, [isCellSelected, ref]);
+
   return (
     <div
       role="gridcell"
@@ -110,9 +117,10 @@ function Cell<R, SR>(
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onContextMenu={handleContextMenu}
+      tabIndex={isCellSelected ? 0 : -1}
+      onPaste={onPaste}
       {...props}
     >
-      <input onPaste={onPaste} type="hidden" />
       {!column.rowGroup && (
         <>
           <column.formatter
