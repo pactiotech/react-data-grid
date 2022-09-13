@@ -135,7 +135,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   expandedGroupIds?: ReadonlySet<unknown> | null;
   onExpandedGroupIdsChange?: ((expandedGroupIds: Set<unknown>) => void) | null;
   onFill?: ((event: FillEvent<R>) => R[]) | null;
-  onPaste?: ((event: PasteEvent<R>) => R) | null;
+  onPaste?: ((event: PasteEvent<R>) => R | null) | null;
   onCopy?: ((event: CopyEvent<R>) => void) | null;
 
   /**
@@ -499,7 +499,7 @@ function DataGrid<R, SR, K extends Key>(
         return;
       }
       if (keyCode === vKey) {
-        handlePaste();
+        handlePaste(event);
         return;
       }
     }
@@ -591,7 +591,7 @@ function DataGrid<R, SR, K extends Key>(
     onCopy({ row, columnKey });
   }
 
-  function handlePaste() {
+  function handlePaste(event: React.KeyboardEvent<HTMLDivElement>) {
     const { idx, rowIdx } = selectedPosition;
     const targetRow = rawRows[getRawRowIdx(rowIdx)];
     if (!onPaste || !onRowsChange || copiedCell === null || !isCellEditable(selectedPosition)) {
@@ -599,13 +599,12 @@ function DataGrid<R, SR, K extends Key>(
     }
 
     const updatedTargetRow = onPaste({
-      sourceRow: copiedCell.row,
-      sourceColumnKey: copiedCell.columnKey,
-      targetRow,
-      targetColumnKey: columns[idx].key
+      event,
+      row: targetRow,
+      columnKey: columns[idx].key
     });
 
-    updateRow(rowIdx, updatedTargetRow);
+    updatedTargetRow && updateRow(rowIdx, updatedTargetRow);
   }
 
   function handleCellInput(event: React.KeyboardEvent<HTMLDivElement>) {

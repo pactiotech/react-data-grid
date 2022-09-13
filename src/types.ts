@@ -194,10 +194,9 @@ export interface FillEvent<TRow> {
 }
 
 export interface PasteEvent<TRow> {
-  sourceColumnKey: string;
-  sourceRow: TRow;
-  targetColumnKey: string;
-  targetRow: TRow;
+  event: React.KeyboardEvent<HTMLDivElement>;
+  columnKey: string;
+  row: TRow;
 }
 
 export interface CopyEvent<TRow> {
