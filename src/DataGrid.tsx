@@ -50,7 +50,8 @@ import type {
   CellNavigationMode,
   SortColumn,
   RowHeightArgs,
-  SelectCellFn
+  SelectCellFn,
+  CopyEvent
 } from './types';
 
 interface SelectCellState extends Position {
@@ -83,6 +84,7 @@ export interface DataGridHandle {
   scrollToColumn: (colIdx: number) => void;
   scrollToRow: (rowIdx: number) => void;
   selectCell: SelectCellFn;
+  resetSelection: () => void;
 }
 
 type SharedDivProps = Pick<
@@ -134,6 +136,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   onExpandedGroupIdsChange?: ((expandedGroupIds: Set<unknown>) => void) | null;
   onFill?: ((event: FillEvent<R>) => R[]) | null;
   onPaste?: ((event: PasteEvent<R>) => R) | null;
+  onCopy?: ((event: CopyEvent<R>) => void) | null;
 
   /**
    * Custom renderers
@@ -206,6 +209,7 @@ function DataGrid<R, SR, K extends Key>(
     onSelectedCellChange,
     onFill,
     onPaste,
+    onCopy,
     // Toggles and modes
     cellNavigationMode: rawCellNavigationMode,
     enableVirtualization,
@@ -238,8 +242,9 @@ function DataGrid<R, SR, K extends Key>(
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [columnWidths, setColumnWidths] = useState<ReadonlyMap<string, number>>(() => new Map());
-  const [selectedPosition, setSelectedPosition] =
-    useState<SelectCellState | EditCellState<R>>(initialPosition);
+  const [selectedPosition, setSelectedPosition] = useState<SelectCellState | EditCellState<R>>(
+    initialPosition
+  );
   const [copiedCell, setCopiedCell] = useState<{ row: R; columnKey: string } | null>(null);
   const [isDragging, setDragging] = useState(false);
   const [draggedOverRowIdx, setOverRowIdx] = useState<number | undefined>(undefined);
@@ -377,7 +382,8 @@ function DataGrid<R, SR, K extends Key>(
         behavior: 'smooth'
       });
     },
-    selectCell
+    selectCell,
+    resetSelection
   }));
 
   /**
@@ -399,6 +405,10 @@ function DataGrid<R, SR, K extends Key>(
   const setDraggedOverRowIdx = useCallback((rowIdx?: number) => {
     setOverRowIdx(rowIdx);
     latestDraggedOverRowIdx.current = rowIdx;
+  }, []);
+
+  const resetSelection = useCallback(() => {
+    setSelectedPosition(initialPosition);
   }, []);
 
   /**
@@ -571,7 +581,14 @@ function DataGrid<R, SR, K extends Key>(
 
   function handleCopy() {
     const { idx, rowIdx } = selectedPosition;
-    setCopiedCell({ row: rawRows[getRawRowIdx(rowIdx)], columnKey: columns[idx].key });
+    const row = rawRows[getRawRowIdx(rowIdx)];
+    const columnKey = columns[idx].key;
+    setCopiedCell({ row, columnKey });
+
+    if (!onCopy) {
+      return;
+    }
+    onCopy({ row, columnKey });
   }
 
   function handlePaste() {

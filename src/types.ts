@@ -200,6 +200,11 @@ export interface PasteEvent<TRow> {
   targetRow: TRow;
 }
 
+export interface CopyEvent<TRow> {
+  columnKey: string;
+  row: TRow;
+}
+
 export type GroupByDictionary<TRow> = Record<
   string,
   {
