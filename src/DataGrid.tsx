@@ -715,6 +715,7 @@ function DataGrid<R, SR, K extends Key>(
 
   function handleEditorRowChange(row: Readonly<R>, commitChanges?: boolean) {
     if (selectedPosition.mode === 'SELECT') return;
+    if (!isCellEditable(selectedPosition)) return;
     if (commitChanges) {
       updateRow(getRawRowIdx(selectedPosition.rowIdx), row);
       closeEditor();
