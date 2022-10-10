@@ -31,7 +31,10 @@ export default {
     linaria({
       preprocessor: 'none',
       classNameSlug(hash) {
-        return 'pactio-v7.0.8';
+        // We add the package version as suffix to avoid style conflicts
+        // between multiple versions of RDG on the same page.
+        console.log(hash);
+        return hash;
       }
     }),
     postcss({ minimize: true }),
