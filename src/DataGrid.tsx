@@ -107,7 +107,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   summaryRows?: readonly SR[] | null;
   /** The getter should return a unique key for each row */
   rowKeyGetter?: ((row: R) => K) | null;
-  onRowsChange?: ((rows: R[], data: RowsChangeData<R, SR>) => void) | null;
+  onRowsChange?: ((oldRows: R[], rows: R[], data: RowsChangeData<R, SR>) => void) | null;
 
   /**
    * Dimensions props
@@ -560,8 +560,9 @@ function DataGrid<R, SR, K extends Key>(
     if (typeof onRowsChange !== 'function') return;
     if (row === rawRows[rowIdx]) return;
     const updatedRows = [...rawRows];
+    const oldRows = [...rawRows];
     updatedRows[rowIdx] = row;
-    onRowsChange(updatedRows, {
+    onRowsChange(oldRows, updatedRows, {
       indexes: [rowIdx],
       column: columns[selectedPosition.idx]
     });
@@ -651,6 +652,7 @@ function DataGrid<R, SR, K extends Key>(
     const column = columns[idx];
     const updatedTargetRows = onFill({ columnKey: column.key, sourceRow, targetRows });
     const updatedRows = [...rawRows];
+    const oldRows = [...rawRows];
     const indexes: number[] = [];
 
     for (let i = startRowIndex; i < endRowIndex; i++) {
@@ -662,7 +664,7 @@ function DataGrid<R, SR, K extends Key>(
     }
 
     if (indexes.length > 0) {
-      onRowsChange(updatedRows, { indexes, column });
+      onRowsChange(oldRows, updatedRows, { indexes, column });
     }
     setDraggedOverRowIdx(undefined);
   }
@@ -698,6 +700,7 @@ function DataGrid<R, SR, K extends Key>(
     const column = columns[idx];
     const updatedTargetRows = onFill({ columnKey: column.key, sourceRow, targetRows });
     const updatedRows = [...rawRows];
+    const oldRows = [...rawRows];
     const indexes: number[] = [];
 
     for (let i = rowIdx + 1; i < updatedRows.length; i++) {
@@ -709,7 +712,7 @@ function DataGrid<R, SR, K extends Key>(
     }
 
     if (indexes.length > 0) {
-      onRowsChange(updatedRows, { indexes, column });
+      onRowsChange(oldRows, updatedRows, { indexes, column });
     }
   }
 
