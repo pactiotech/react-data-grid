@@ -600,19 +600,21 @@ function DataGrid<R, SR, K extends Key>(
     }
     const column = columns[idx];
     const oldRows = [...rawRows];
-    const updatedTargetRows =
-      onPaste({
-        event,
-        rowIndex: rowIdx,
-        columnKey: columns[idx].key
-      }) ?? [];
+    const updatedTargetRows = onPaste({
+      event,
+      rowIndex: rowIdx,
+      columnKey: columns[idx].key
+    });
+
+    if (!updatedTargetRows || updatedTargetRows.length === 0) {
+      return;
+    }
     const updatedRows = [...rawRows];
     const indexes: number[] = [];
 
-    for (let i = rowIdx + 1; i < updatedRows.length; i++) {
-      const targetRowIdx = i - rowIdx - 1;
-      if (updatedRows[i] !== updatedTargetRows[targetRowIdx]) {
-        updatedRows[i] = updatedTargetRows[targetRowIdx];
+    for (let i = 0; i < updatedRows.length; i++) {
+      if (updatedRows[i] !== updatedTargetRows[i]) {
+        updatedRows[i] = updatedTargetRows[i];
         indexes.push(i);
       }
     }
