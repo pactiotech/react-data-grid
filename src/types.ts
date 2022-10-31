@@ -195,10 +195,10 @@ export interface FillEvent<TRow> {
   targetRows: TRow[];
 }
 
-export interface PasteEvent<TRow> {
+export interface PasteEvent {
   event: React.ClipboardEvent<HTMLDivElement>;
   columnKey: string;
-  row: TRow;
+  rowIndex: number;
 }
 
 export interface CopyEvent<TRow> {

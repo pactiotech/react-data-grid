@@ -135,7 +135,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   expandedGroupIds?: ReadonlySet<unknown> | null;
   onExpandedGroupIdsChange?: ((expandedGroupIds: Set<unknown>) => void) | null;
   onFill?: ((event: FillEvent<R>) => R[]) | null;
-  onPaste?: ((event: PasteEvent<R>) => R | null) | null;
+  onPaste?: ((event: PasteEvent) => R[] | null) | null;
   onCopy?: ((event: CopyEvent<R>) => void) | null;
 
   /**
@@ -595,18 +595,31 @@ function DataGrid<R, SR, K extends Key>(
 
   function handlePaste(event: React.ClipboardEvent<HTMLDivElement>) {
     const { idx, rowIdx } = selectedPosition;
-    const targetRow = rawRows[getRawRowIdx(rowIdx)];
     if (!onPaste || !onRowsChange || !isCellEditable(selectedPosition)) {
       return;
     }
+    const column = columns[idx];
+    const oldRows = [...rawRows];
+    const updatedTargetRows =
+      onPaste({
+        event,
+        rowIndex: rowIdx,
+        columnKey: columns[idx].key
+      }) ?? [];
+    const updatedRows = [...rawRows];
+    const indexes: number[] = [];
 
-    const updatedTargetRow = onPaste({
-      event,
-      row: targetRow,
-      columnKey: columns[idx].key
-    });
+    for (let i = rowIdx + 1; i < updatedRows.length; i++) {
+      const targetRowIdx = i - rowIdx - 1;
+      if (updatedRows[i] !== updatedTargetRows[targetRowIdx]) {
+        updatedRows[i] = updatedTargetRows[targetRowIdx];
+        indexes.push(i);
+      }
+    }
 
-    updatedTargetRow && updateRow(rowIdx, updatedTargetRow);
+    if (indexes.length > 0) {
+      onRowsChange(oldRows, updatedRows, { indexes, column });
+    }
   }
 
   function handleCellInput(event: React.KeyboardEvent<HTMLDivElement>) {
