@@ -70,6 +70,12 @@ type DefaultColumnOptions<R, SR> = Pick<
   'formatter' | 'minWidth' | 'resizable' | 'sortable'
 >;
 
+export interface CustomCellClassnames {
+  [rowIdx: number]: {
+    [columnKey: string]: string
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 const body = globalThis.document?.body;
 
@@ -85,6 +91,7 @@ export interface DataGridHandle {
   scrollToRow: (rowIdx: number) => void;
   selectCell: SelectCellFn;
   resetSelection: () => void;
+  styleCells: (cellStyles: CustomCellClassnames, duration?: number) => void;
 }
 
 type SharedDivProps = Pick<
@@ -248,6 +255,7 @@ function DataGrid<R, SR, K extends Key>(
   const [copiedCell, setCopiedCell] = useState<{ row: R; columnKey: string } | null>(null);
   const [isDragging, setDragging] = useState(false);
   const [draggedOverRowIdx, setOverRowIdx] = useState<number | undefined>(undefined);
+  const [tempCellClassnames, setTempCellClassnames] = useState<CustomCellClassnames>({});
 
   /**
    * refs
@@ -383,7 +391,8 @@ function DataGrid<R, SR, K extends Key>(
       });
     },
     selectCell,
-    resetSelection
+    resetSelection,
+    styleCells
   }));
 
   /**
@@ -776,6 +785,13 @@ function DataGrid<R, SR, K extends Key>(
     onSelectedCellChange?.({ ...position });
   }
 
+  function styleCells(cellStyles: CustomCellClassnames, duration?: number) {
+    setTempCellClassnames(cellStyles);
+    if (duration) {
+      setTimeout(() => setTempCellClassnames({}), duration);
+    }
+  };
+
   function closeEditor() {
     if (selectedPosition.mode === 'SELECT') return;
     setSelectedPosition(({ idx, rowIdx }) => ({ idx, rowIdx, mode: 'SELECT' }));
@@ -1043,6 +1059,7 @@ function DataGrid<R, SR, K extends Key>(
               : undefined
           }
           draggedOverCellIdx={getDraggedOverCellIdx(rowIdx)}
+          tempClassnames={tempCellClassnames[rowIdx]}
           setDraggedOverRowIdx={isDragging ? setDraggedOverRowIdx : undefined}
           lastFrozenColumnIndex={lastFrozenColumnIndex}
           selectedCellProps={getSelectedCellProps(rowIdx)}

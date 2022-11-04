@@ -144,6 +144,7 @@ export interface CellRendererProps<TRow, TSummaryRow>
   isCopied: boolean;
   isDraggedOver: boolean;
   isCellSelected: boolean;
+  tempClassname: string | undefined;
   dragHandleProps:
     | Pick<React.HTMLAttributes<HTMLDivElement>, 'onMouseDown' | 'onDoubleClick'>
     | undefined;
@@ -163,6 +164,7 @@ export interface RowRendererProps<TRow, TSummaryRow = unknown>
   rowIdx: number;
   copiedCellIdx: number | undefined;
   draggedOverCellIdx: number | undefined;
+  tempClassnames: { [columnKey: string]: string } | undefined;
   lastFrozenColumnIndex: number;
   isRowSelected: boolean;
   top: number;

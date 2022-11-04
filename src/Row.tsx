@@ -29,6 +29,7 @@ function Row<R, SR>(
     height,
     onRowChange,
     selectCell,
+    tempClassnames,
     ...props
   }: RowRendererProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
@@ -82,6 +83,7 @@ function Row<R, SR>(
         row={row}
         isCopied={copiedCellIdx === column.idx}
         isDraggedOver={draggedOverCellIdx === column.idx}
+        tempClassname={tempClassnames ? tempClassnames[column.key] : undefined}
         isCellSelected={isCellSelected}
         dragHandleProps={
           isCellSelected ? (selectedCellProps as SelectedCellProps).dragHandleProps : undefined

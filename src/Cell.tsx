@@ -48,6 +48,7 @@ function Cell<R, SR>(
     isCellSelected,
     isCopied,
     isDraggedOver,
+    tempClassname,
     row,
     rowIdx,
     dragHandleProps,
@@ -67,7 +68,12 @@ function Cell<R, SR>(
     column,
     {
       [cellCopiedClassname]: isCopied,
-      [cellDraggedOverClassname]: isDraggedOver
+      [cellDraggedOverClassname]: isDraggedOver,
+      ...(
+        tempClassname ? {
+          [tempClassname]: true,
+        } : {}
+      )
     },
     typeof cellClass === 'function' ? cellClass(row) : cellClass,
     className
