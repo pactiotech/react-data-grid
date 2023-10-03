@@ -15,6 +15,10 @@ export interface Column<TRow, TSummaryRow = unknown> {
   /** Maximum column width in px. */
   maxWidth?: number | null;
   cellClass?: string | ((row: TRow) => string | undefined | null) | null;
+  cellDataAttributes?:
+    | Record<string, string>
+    | ((row: TRow) => Record<string, string> | undefined | null)
+    | null;
   headerCellClass?: string | null;
   summaryCellClass?: string | ((row: TSummaryRow) => string) | null;
   /** Formatter to be used to render the cell content */
@@ -164,7 +168,7 @@ export interface RowRendererProps<TRow, TSummaryRow = unknown>
   rowIdx: number;
   copiedCellIdx: number | undefined;
   draggedOverCellIdx: number | undefined;
-  tempClassnames: { [columnKey: string]: string } | undefined;
+  tempClassnames: Record<string, string> | undefined;
   lastFrozenColumnIndex: number;
   isRowSelected: boolean;
   top: number;
