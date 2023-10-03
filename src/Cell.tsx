@@ -63,21 +63,24 @@ function Cell<R, SR>(
   }: CellRendererProps<R, SR>,
   ref: React.Ref<HTMLDivElement>
 ) {
-  const { cellClass } = column;
+  const { cellClass, cellDataAttributes } = column;
   className = getCellClassname(
     column,
     {
       [cellCopiedClassname]: isCopied,
       [cellDraggedOverClassname]: isDraggedOver,
-      ...(
-        tempClassname ? {
-          [tempClassname]: true,
-        } : {}
-      )
+      ...(tempClassname
+        ? {
+            [tempClassname]: true
+          }
+        : {})
     },
     typeof cellClass === 'function' ? cellClass(row) : cellClass,
     className
   );
+
+  const dataAttributes =
+    typeof cellDataAttributes === 'function' ? cellDataAttributes(row) : cellDataAttributes;
 
   function selectCellWrapper(openEditor?: boolean | null) {
     selectCell({ idx: column.idx, rowIdx }, openEditor);
@@ -128,6 +131,7 @@ function Cell<R, SR>(
       onContextMenu={handleContextMenu}
       tabIndex={isCellSelected ? 0 : -1}
       onPaste={onPaste}
+      {...dataAttributes}
       {...props}
     >
       {!column.rowGroup && (
