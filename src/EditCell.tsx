@@ -70,12 +70,15 @@ export default function EditCell<R, SR>({
     };
   }, [commitOnOutsideMouseDown]);
 
-  const { cellClass } = column;
+  const { cellClass, cellDataAttributes } = column;
   const className = getCellClassname(
     column,
     cellEditingClassname,
     typeof cellClass === 'function' ? cellClass(row) : cellClass
   );
+
+  const dataAttributes =
+    typeof cellDataAttributes === 'function' ? cellDataAttributes(row) : cellDataAttributes;
 
   let content;
   if (column.editor != null) {
@@ -102,6 +105,7 @@ export default function EditCell<R, SR>({
       aria-selected
       className={className}
       style={getCellStyle(column, colSpan)}
+      {...dataAttributes}
       onKeyDown={onKeyDown}
       onMouseDownCapture={cancelFrameRequest}
     >
