@@ -53,6 +53,7 @@ import type {
   SelectCellFn,
   CopyEvent
 } from './types';
+import {PasteResult} from "./types";
 
 interface SelectCellState extends Position {
   mode: 'SELECT';
@@ -142,7 +143,7 @@ export interface DataGridProps<R, SR = unknown, K extends Key = Key> extends Sha
   expandedGroupIds?: ReadonlySet<unknown> | null;
   onExpandedGroupIdsChange?: ((expandedGroupIds: Set<unknown>) => void) | null;
   onFill?: ((event: FillEvent<R>) => R[]) | null;
-  onPaste?: ((event: PasteEvent) => R[] | null) | null;
+  onPaste?: ((event: PasteEvent) => PasteResult<R> | null) | null;
   onCopy?: ((event: CopyEvent<R>) => void) | null;
 
   /**
@@ -573,7 +574,8 @@ function DataGrid<R, SR, K extends Key>(
     updatedRows[rowIdx] = row;
     onRowsChange(oldRows, updatedRows, {
       indexes: [rowIdx],
-      column: columns[selectedPosition.idx]
+      column: columns[selectedPosition.idx],
+      isPasteWithEvidence: false
     });
   }
 
@@ -609,11 +611,17 @@ function DataGrid<R, SR, K extends Key>(
     }
     const column = columns[idx];
     const oldRows = [...rawRows];
-    const updatedTargetRows = onPaste({
+    const pasteResult = onPaste({
       event,
       rowIndex: rowIdx,
       columnKey: columns[idx].key
     });
+
+    if (!pasteResult){
+      return;
+    }
+
+    const { rows:updatedTargetRows, isPasteWithEvidence } = pasteResult;
 
     if (!updatedTargetRows || updatedTargetRows.length === 0) {
       return;
@@ -629,7 +637,7 @@ function DataGrid<R, SR, K extends Key>(
     }
 
     if (indexes.length > 0) {
-      onRowsChange(oldRows, updatedRows, { indexes, column });
+      onRowsChange(oldRows, updatedRows, { indexes, column, isPasteWithEvidence });
     }
   }
 

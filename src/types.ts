@@ -187,6 +187,7 @@ export interface RowRendererProps<TRow, TSummaryRow = unknown>
 export interface RowsChangeData<R, SR = unknown> {
   indexes: number[];
   column: CalculatedColumn<R, SR>;
+  isPasteWithEvidence?: boolean;
 }
 
 export interface SelectRowEvent {
@@ -205,6 +206,11 @@ export interface PasteEvent {
   event: React.ClipboardEvent<HTMLDivElement>;
   columnKey: string;
   rowIndex: number;
+}
+
+export interface PasteResult<TRow> {
+  rows: TRow[];
+  isPasteWithEvidence: boolean;
 }
 
 export interface CopyEvent<TRow> {
