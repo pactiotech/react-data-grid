@@ -623,7 +623,7 @@ function DataGrid<R, SR, K extends Key>(
 
     const { rows:updatedTargetRows, isPasteWithEvidence } = pasteResult;
 
-    if (!updatedTargetRows || updatedTargetRows.length === 0) {
+    if (updatedTargetRows.length === 0) {
       return;
     }
     const updatedRows = [...rawRows];
