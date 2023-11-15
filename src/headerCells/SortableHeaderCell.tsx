@@ -32,9 +32,9 @@ export default function SortableHeaderCell<R, SR>({
 }: Props<R, SR>) {
   let sortText = '';
   if (sortDirection === 'ASC') {
-    sortText = '\u2591';
+    sortText = '\u2191';
   } else if (sortDirection === 'DESC') {
-    sortText = '\u2593';
+    sortText = '\u2193';
   }
 
   return (
