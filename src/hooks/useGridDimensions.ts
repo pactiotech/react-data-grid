@@ -1,47 +1,42 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 
-export function useGridDimensions(): [
-  ref: React.RefObject<HTMLDivElement>,
-  width: number,
-  height: number
-] {
+import { useLayoutEffect } from './useLayoutEffect';
+
+export function useGridDimensions() {
   const gridRef = useRef<HTMLDivElement>(null);
-  // keep track of the old width and the new width to avoid twitching
-  const [gridWidth, setGridWidth] = useState([0, 1]);
-  const [gridHeight, setGridHeight] = useState(1);
+  const [inlineSize, setInlineSize] = useState(1);
+  const [blockSize, setBlockSize] = useState(1);
+  const [horizontalScrollbarHeight, setHorizontalScrollbarHeight] = useState(0);
 
   useLayoutEffect(() => {
     const { ResizeObserver } = window;
 
-    // don't break in Node.js (SSR), jest/jsdom, and browsers that don't support ResizeObserver
+    // don't break in Node.js (SSR), jsdom, and browsers that don't support ResizeObserver
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (ResizeObserver == null) return;
 
-    function saveDimensions() {
-      // Get dimensions without scrollbars.
-      // The dimensions given by the callback entries in Firefox do not substract the scrollbar sizes.
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=1733042
-      const { clientWidth, clientHeight } = gridRef.current!;
-      // TODO: remove once fixed upstream
-      // we reduce width by 1px here to avoid layout issues in Chrome
-      // https://bugs.chromium.org/p/chromium/issues/detail?id=1206298
-      setGridWidth((prev: number[]) => {
-        const newValue = clientWidth - (devicePixelRatio % 1 === 0 ? 0 : 1);
+    const { clientWidth, clientHeight, offsetWidth, offsetHeight } = gridRef.current!;
+    const { width, height } = gridRef.current!.getBoundingClientRect();
+    const initialHorizontalScrollbarHeight = offsetHeight - clientHeight;
+    const initialWidth = width - offsetWidth + clientWidth;
+    const initialHeight = height - initialHorizontalScrollbarHeight;
 
-        // If the new value is the same as the previous value, just ignore it.
-        // If we change back the value to the old one, we will end up with
-        // and infinite loop of twitching.
-        if (prev[0] === newValue) {
-          return prev;
-        }
+    setInlineSize(initialWidth);
+    setBlockSize(initialHeight);
+    setHorizontalScrollbarHeight(initialHorizontalScrollbarHeight);
 
-        return [prev[1], newValue];
+    const resizeObserver = new ResizeObserver((entries) => {
+      const size = entries[0].contentBoxSize[0];
+      const { clientHeight, offsetHeight } = gridRef.current!;
+
+      // we use flushSync here to avoid flashing scrollbars
+      flushSync(() => {
+        setInlineSize(size.inlineSize);
+        setBlockSize(size.blockSize);
+        setHorizontalScrollbarHeight(offsetHeight - clientHeight);
       });
-      setGridHeight(clientHeight);
-    }
-
-    saveDimensions();
-    const resizeObserver = new ResizeObserver(saveDimensions);
+    });
     resizeObserver.observe(gridRef.current!);
 
     return () => {
@@ -49,5 +44,5 @@ export function useGridDimensions(): [
     };
   }, []);
 
-  return [gridRef, gridWidth[1], gridHeight];
+  return [gridRef, inlineSize, blockSize, horizontalScrollbarHeight] as const;
 }

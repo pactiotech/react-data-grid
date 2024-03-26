@@ -1,6 +1,3 @@
-/.linaria-cache
-/coverage
-/lib
-/node_modules
-/package-lock.json
-/storybook-static
+*.js
+*.cjs
+*.json

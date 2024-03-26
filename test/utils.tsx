@@ -1,18 +1,24 @@
 import { StrictMode } from 'react';
-import { render, screen } from '@testing-library/react';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { act, fireEvent, render as rtlRender, screen } from '@testing-library/react';
+
 import DataGrid from '../src/';
 import type { DataGridProps } from '../src/';
 
+export function render(child: React.ReactElement) {
+  return rtlRender(<StrictMode>{child}</StrictMode>);
+}
+
 export function setup<R, SR, K extends React.Key>(props: DataGridProps<R, SR, K>) {
-  return render(
-    <StrictMode>
-      <DataGrid {...props} />
-    </StrictMode>
-  );
+  return render(<DataGrid {...props} />);
 }
 
 export function getGrid() {
   return screen.getByRole('grid');
+}
+
+export function getTreeGrid() {
+  return screen.getByRole('treegrid');
 }
 
 export function getRows() {
@@ -46,7 +52,10 @@ export function queryHeaderCells() {
 }
 
 export function getSelectedCell() {
-  return screen.queryByRole('gridcell', { selected: true });
+  return (
+    screen.queryByRole('gridcell', { selected: true }) ??
+    screen.queryByRole('columnheader', { selected: true })
+  );
 }
 
 export function validateCellPosition(columnIdx: number, rowIdx: number) {
@@ -55,5 +64,43 @@ export function validateCellPosition(columnIdx: number, rowIdx: number) {
     throw new Error('Selected cell not found');
   }
   expect(cell).toHaveAttribute('aria-colindex', `${columnIdx + 1}`);
-  expect(cell.parentNode).toHaveAttribute('aria-rowindex', `${rowIdx + 2}`);
+  expect(cell.parentNode).toHaveAttribute('aria-rowindex', `${rowIdx + 1}`);
+}
+
+export function copySelectedCell() {
+  // eslint-disable-next-line testing-library/prefer-user-event
+  fireEvent.keyDown(document.activeElement!, {
+    keyCode: '67',
+    ctrlKey: true
+  });
+}
+
+export function pasteSelectedCell() {
+  // eslint-disable-next-line testing-library/prefer-user-event
+  fireEvent.keyDown(document.activeElement!, {
+    keyCode: '86',
+    ctrlKey: true
+  });
+}
+
+export async function scrollGrid({
+  scrollLeft,
+  scrollTop
+}: {
+  scrollLeft?: number;
+  scrollTop?: number;
+}) {
+  const grid = getGrid();
+
+  await act(async () => {
+    if (scrollLeft !== undefined) {
+      grid.scrollLeft = scrollLeft;
+    }
+    if (scrollTop !== undefined) {
+      grid.scrollTop = scrollTop;
+    }
+
+    // let the browser fire the 'scroll' event
+    await new Promise(requestAnimationFrame);
+  });
 }

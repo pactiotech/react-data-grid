@@ -1,41 +1,50 @@
-import { SelectCellFormatter } from './formatters';
-import { useRowSelection } from './hooks';
-import type { Column, FormatterProps, GroupFormatterProps } from './types';
-import { stopPropagation } from './utils';
+import { useRowSelection } from './hooks/useRowSelection';
+import type { Column, RenderCellProps, RenderGroupCellProps, RenderHeaderCellProps } from './types';
+import { SelectCellFormatter } from './cellRenderers';
 
 export const SELECT_COLUMN_KEY = 'select-row';
 
-function SelectFormatter(props: FormatterProps<unknown>) {
+function HeaderRenderer(props: RenderHeaderCellProps<unknown>) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
 
   return (
     <SelectCellFormatter
-      aria-label="Select"
-      tabIndex={-1}
-      isCellSelected={props.isCellSelected}
+      aria-label="Select All"
+      tabIndex={props.tabIndex}
       value={isRowSelected}
-      onClick={stopPropagation}
-      onChange={(checked, isShiftClick) => {
-        onRowSelectionChange({ rowIdx: props.rowIdx, checked, isShiftClick });
+      onChange={(checked) => {
+        onRowSelectionChange({ type: 'HEADER', checked });
       }}
     />
   );
 }
 
-function SelectGroupFormatter(props: GroupFormatterProps<unknown>) {
+function SelectFormatter(props: RenderCellProps<unknown>) {
+  const [isRowSelected, onRowSelectionChange] = useRowSelection();
+
+  return (
+    <SelectCellFormatter
+      aria-label="Select"
+      tabIndex={props.tabIndex}
+      value={isRowSelected}
+      onChange={(checked, isShiftClick) => {
+        onRowSelectionChange({ type: 'ROW', row: props.row, checked, isShiftClick });
+      }}
+    />
+  );
+}
+
+function SelectGroupFormatter(props: RenderGroupCellProps<unknown>) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
 
   return (
     <SelectCellFormatter
       aria-label="Select Group"
-      tabIndex={-1}
-      isCellSelected={props.isCellSelected}
+      tabIndex={props.tabIndex}
       value={isRowSelected}
       onChange={(checked) => {
-        onRowSelectionChange({ checked, isShiftClick: false, rowIdx: props.rowIdx });
+        onRowSelectionChange({ type: 'ROW', row: props.row, checked, isShiftClick: false });
       }}
-      // Stop propagation to prevent row selection
-      onClick={stopPropagation}
     />
   );
 }
@@ -45,20 +54,18 @@ export const SelectColumn: Column<any, any> = {
   key: SELECT_COLUMN_KEY,
   name: '',
   width: 35,
+  minWidth: 35,
   maxWidth: 35,
   resizable: false,
   sortable: false,
   frozen: true,
-  headerRenderer(props) {
-    return (
-      <SelectCellFormatter
-        aria-label="Select All"
-        isCellSelected={false}
-        value={props.allRowsSelected}
-        onChange={props.onAllRowsSelectionChange}
-      />
-    );
+  renderHeaderCell(props) {
+    return <HeaderRenderer {...props} />;
   },
-  formatter: SelectFormatter,
-  groupFormatter: SelectGroupFormatter
+  renderCell(props) {
+    return <SelectFormatter {...props} />;
+  },
+  renderGroupCell(props) {
+    return <SelectGroupFormatter {...props} />;
+  }
 };

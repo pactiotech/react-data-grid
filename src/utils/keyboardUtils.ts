@@ -53,6 +53,8 @@ export function isCtrlKeyHeldDown(e: React.KeyboardEvent): boolean {
 }
 
 export function isDefaultCellInput(event: React.KeyboardEvent<HTMLDivElement>): boolean {
+  const vKey = 86;
+  if (isCtrlKeyHeldDown(event) && event.keyCode !== vKey) return false;
   return !nonInputKeys.has(event.key);
 }
 
@@ -69,8 +71,9 @@ export function onEditorNavigation({ key, target }: React.KeyboardEvent<HTMLDivE
       target instanceof HTMLTextAreaElement ||
       target instanceof HTMLSelectElement)
   ) {
-    return target.matches(
-      '.rdg-editor-container > :only-child, .rdg-editor-container > label:only-child > :only-child'
+    return (
+      target.closest('.rdg-editor-container')?.querySelectorAll('input, textarea, select')
+        .length === 1
     );
   }
   return false;
